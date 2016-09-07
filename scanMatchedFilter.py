@@ -207,7 +207,10 @@ def calculateNormalizedScores(peakFiles, currWidth, opPrefix, pp):
 		x, y = getProbabilityDistribution(scores)
 		median = np.median(scores)
 		stddev = np.std(scores)
-		popt,pcov = curve_fit(gauss_function, x, y, p0=[np.max(y), median, stddev])
+		try:
+			popt,pcov = curve_fit(gauss_function, x, y, p0=[np.max(y), median, stddev])
+		except:
+			popt = [np.max(y), median, stddev]
 		yest2 = gauss_function(x,*popt)
 		P.plot(x, y,'b*:',label='filtered MF scores')
 		P.plot(x, yest2,'g*:',label='fit2')
@@ -307,6 +310,8 @@ def getSignals(bigWigFiles, bigWigList, currRegions, currSignal):
 	idx = 0 
 	signalList = []
 	for currFeature in currRegions:
+		if currFeature.start  < 500:
+			currFeature.start = 500
 		newFeature = pbt.BedTool(currFeature.chrom + " " + str(currFeature.start - 500) + " " + str(currFeature.end + 500), from_string=True)[0]
 		numBP = newFeature.end - newFeature.start
 		numBins = numBP/binSize
@@ -474,7 +479,10 @@ def getGaussianFits(bigWigList, opPrefix):
 			x, y = getProbabilityDistribution(scores)
 			median = np.median(scores)
 			stddev = np.std(scores)
-			popt,pcov = curve_fit(gauss_function, x, y, p0=[np.max(y), median, stddev])
+			try:
+				popt,pcov = curve_fit(gauss_function, x, y, p0=[np.max(y), median, stddev])
+			except:
+				popt = [np.max(y), median, stddev]
 			yest2 = gauss_function(x,*popt)
 			normDist[currSignal][currWidth] = popt[0]
 			meanDist[currSignal][currWidth] = popt[1]
@@ -537,32 +545,37 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 	#Get Relevant signals and relevant regions for checking for metaprofile
 	signalList = OrderedDict()
 	regionList = OrderedDict()
+	print "Identifying regions"
+
 	if "H3K27ac" in bigWigFiles:
 		os.system("bigWigToBedGraph -chrom=" + chrName + " " + bigWigFiles["H3K27ac"] + " temp_H3K27ac.bedgraph")
-		os.system("sortBed -i temp_H3K27ac.bedgraph | mergeBed -i - -d 5000 > temp2_H3K27ac.bedgraph")
+		os.system("awk '{if ($4 != 0) print $0}' temp_H3K27ac.bedgraph | mergeBed -i - -d 1000 > temp2_H3K27ac.bedgraph")
 		os.system("rm temp_H3K27ac.bedgraph")
 		currRegions = pbt.BedTool("temp2_H3K27ac.bedgraph")
 	
+	print "Get signals"
 	for currSignal in bigWigFiles:	
 		signalList[currSignal], regionList[currSignal] = getRelevantSignals(bigWigFiles, bigWigList, currRegions, currSignal)		
-		#print len(signalList[currSignal])
+		print len(signalList[currSignal])
 	
 
+	print "Get background MF scores"
 	#Calculate matched filter scores for different signals	
 	for currSignal in bigWigFiles:
-		currWidth = 350
-		while currWidth <= 1100:
-			scoreWithMatchedFilter(signalList[currSignal], regionList[currSignal], metaprofiles[currSignal], currWidth, currSignal, opPrefix)
-			currWidth += 25
+	  	currWidth = 350
+	  	while currWidth <= 1100:
+	  		scoreWithMatchedFilter(signalList[currSignal], regionList[currSignal], metaprofiles[currSignal], currWidth, currSignal, opPrefix)
+	  		currWidth += 25
 	del regionList, signalList
 	
-	# currWidth = 350
-	# while currWidth <= 1100:
-	# 	calculateNormalizedScores(peakFiles, currWidth, opPrefix, pp)
-	# 	getPositivesMF(opPrefix, peakFiles, currWidth)
-	# 	currWidth += 25
+	print "Normalizing scores"
+	currWidth = 350
+	while currWidth <= 1100:
+	 	calculateNormalizedScores(peakFiles, currWidth, opPrefix, pp)
+	 	#getPositivesMF(opPrefix, peakFiles, currWidth)
+	 	currWidth += 25
 
-	# for currSignal in peakFiles: 
+	#for currSignal in peakFiles: 
 	# 	currWidth = 350
 	# 	files = ""
 	# 	while currWidth <= 1100:			
@@ -573,6 +586,7 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 
 	#Reading training data and then training model
 	#Please ensure that same features are in positive score file and negative score file (and they are in same order)
+	print "Training"
 	positiveFeatures, positiveScores = training.getScores(trainingPositives)
 	negativeFeatures, negativeScores = training.getScores(trainingNegatives)
 	positiveScores = training.chooseRelevantColumns(positiveScores, positiveFeatures, bigWigFiles)
@@ -587,9 +601,15 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 	op = open(opPrefix + "_testScores.dat" ,"w")
 	signalList = OrderedDict()
 	regionList = []
+	#skip = True
 	for currChr in chromosomes:
+		#if skip:
+			#if currChr != "chr17":
+			#	continue
+			#else:
+			#	skip = False
 		os.system("bigWigToBedGraph -chrom=" + currChr + " " + bigWigFiles["H3K27ac"] + " temp_H3K27ac.bedgraph")
-		os.system("sortBed -i temp_H3K27ac.bedgraph | mergeBed -i - -d 5000 > temp2_H3K27ac.bedgraph")
+		os.system("awk '{if ($4 != 0) print $0}' temp_H3K27ac.bedgraph | mergeBed -i - -d 1000 > temp2_H3K27ac.bedgraph")
 		os.system("rm temp_H3K27ac.bedgraph")
 		currRegions = pbt.BedTool("temp2_H3K27ac.bedgraph")
 		signalList = testData.getTestRegions(bigWigFiles, bigWigList, currRegions)	
@@ -616,6 +636,7 @@ if __name__ == "__main__":
 		sys.stderr.write("\t<outputPrefix> is the prefix for all chromosome names\n")
 		sys.exit()
 
-	bigWigList, metaProfileList, chrNameFile, peakFileList, trainingPositives, trainingNegatives, opPrefix = sys.argv[1:]
-	main(bigWigList, metaProfileList, chrNameFile, peakFileList, trainingPositives, trainingNegatives, opPrefix)
+	bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPositives, trainingNegatives, opPrefix = sys.argv[1:]
+	main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPositives, trainingNegatives, opPrefix)
+	
 	
