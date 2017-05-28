@@ -80,12 +80,12 @@ def calculateZscores(positiveScores, negativeScores, trainingNegatives):
 
 		idx2 = 0
 		for currScore in positiveScores:
-			Zpos[idx2].append((currScore[idx] - median)/sigma)
+			Zpos[idx2].append((currScore[idx] - nopt[1])/nopt[2])
 			idx2 += 1
 
 		idx2 = 0
 		for currScore in negativeScores:
-			Zneg[idx2].append((currScore[idx] - median)/sigma)
+			Zneg[idx2].append((currScore[idx] - nopt[1])/nopt[2])
 			idx2 += 1
 		
 	return Zpos, Zneg
