@@ -1,3 +1,0 @@
-
-1) Remove redundancy in code - for example, a lot of the machine learning models are defined in both validation scripts.
-2) Right now you cannot run genome scan without H3K27ac. Need to make this independent of H3K27ac.
