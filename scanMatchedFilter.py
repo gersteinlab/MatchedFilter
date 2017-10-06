@@ -518,7 +518,7 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 	try:
 		ip = open(bigWigFileList, "r")
 	except:
-		sys.stderr.write("Cannot open bigwig list file " + bigWigList + "\n")
+		sys.stderr.write("Cannot open bigwig list file " + bigWigFileList + "\n")
 		sys.exit(1)
 	bigWigList, bigWigFiles = readBigWigList(ip)
 	ip.close()
