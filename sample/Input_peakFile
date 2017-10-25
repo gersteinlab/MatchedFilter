@@ -1,0 +1,6 @@
+H3K27ac /Path/To/peakFiles/sample_H3K27ac_narrowPeak.bed
+H3K4me1	/Path/To/signalFiles/sample_H3K4me1_logEnr.bigWig
+H3K4me2	/Path/To/signalFiles/sample_H3K4me2_logEnr.bigWig
+H3K4me3	/Path/To/signalFiles/sample_H3K4me3_logEnr.bigWig
+H3K9ac	/Path/To/signalFiles/sample_H3K9ac_logEnr.bigWig
+DHS /Path/To/signalFiles/sample_DHS_logEnr.bigWig
