@@ -67,7 +67,7 @@ def getPossiblePairings(signalList, currRegions, metaprofiles, meanDist, stdDist
 			start = region.start - 487.5 + (currPairing[1] + currPairing[0])*12.5 - float(finalWidth)/2
 			end = start + finalWidth
 			x1 = np.linspace(start, end, num=numPoints)	
-			op.write(region.chrom + ":" + str(np.floor(start)) + "-" + str(np.ceil(end)))
+			op.write(region.chrom + ":" + str(np.floor(start)) + "-" + str(np.ceil(end)))  ### This is scoreTestData fields[0]
 			for currSignal in signalList:
 				y1 = f[currSignal](x1)
 				y1 = y1.T

@@ -4,7 +4,7 @@ There are 4 scripts within this tool:
 
 1) createMetaPattern.py creates the metaprofile given peaks from a massively parallel reporter assay for promoter and enhancer activity. To run this script:
 
-> python createMetaPattern.py <histoneFile.bigWig> <MPRApeaks.bed> <nonrandomFile.bed> <opPrefix> [<otherMarks>]
+python createMetaPattern.py <histoneFile.bigWig> <MPRApeaks.bed> <nonrandomFile.bed> <opPrefix> [<otherMarks>]
 
 where:
 	<histoneFile.bigWig> is the histone signal over the genome for the primary mark (H3K27ac in journal article) in bigWig format (https://genome.ucsc.edu/goldenpath/help/bigWig.html). The signal is in log-foldchange between histone and control ChIP-seq datasets.
@@ -69,8 +69,12 @@ where:
 	<metaProfileList> is the list with training profiles. This is a tab-delimited 2 column file with the first column containing experimental dataset name (for example, H3K4me1) and the 2nd column containing file name with metaprofile (provided in subdirectory metaprofiles).
 
 	<chrNameList> is the list with chromosome names. The first column contains chromosome name and 2nd column contains length of chromosome.
-
+	
 	<peakFileList> is the file with chromatin peaks. These regions are removed during background model fitting.
+	
+	<positiveScores> is the file containing the scores for all training positives, provided in the training data directory.
+	
+	<negativeScores> is the file containing the scores for all training negatives, provided in the training data directory.
 
 	<opPrefix> is the prefix for all output files.
 

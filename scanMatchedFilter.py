@@ -1,5 +1,7 @@
 #!/usr/bin/env python2.7
 
+import matplotlib
+matplotlib.use('Agg')
 import sys
 import os
 from collections import OrderedDict
@@ -10,8 +12,6 @@ import metaseq
 import numpy as np
 from scipy import interpolate
 from scipy.optimize import curve_fit
-import matplotlib
-matplotlib.use('Agg')
 from matplotlib.backends.backend_pdf import PdfPages
 import pylab as P
 import scipy
@@ -518,7 +518,7 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 	try:
 		ip = open(bigWigFileList, "r")
 	except:
-		sys.stderr.write("Cannot open bigwig list file " + bigWigList + "\n")
+		sys.stderr.write("Cannot open bigwig list file " + bigWigFileList + "\n")
 		sys.exit(1)
 	bigWigList, bigWigFiles = readBigWigList(ip)
 	ip.close()
@@ -623,16 +623,16 @@ def main(bigWigFileList, metaProfileList, chrNameFile, peakFileList, trainingPos
 
 if __name__ == "__main__":
 	if len(sys.argv) != 8:
-		sys.stderr.write("Usage: " + sys.argv[0] + " <fileList> <metaProfileList> <chrNameFile> <peakFileList> <opPrefix>\n")
+		sys.stderr.write("Usage: " + sys.argv[0] + " <fileList> <metaProfileList> <chrNameFile> <peakFileList> <positiveScores> <negativeScores> <opPrefix>\n")
 		sys.stderr.write("where:\n")
 		sys.stderr.write("\t<fileList> is a file with the list of chromatin signals in the format (2 column tab delimited)\n")
 		sys.stderr.write("\t\tSignalType\tFilename\n")
 		sys.stderr.write("\t<metaProfileList> is a file with the list of metaprofiles in the format (2 column tab delimited)\n")
 		sys.stderr.write("\t\tSignalType\tFilename\n")
-		sys.stderr.write("\t<chrNameFile> is the name of the chromosome for which you are running analysis\n")
+		sys.stderr.write("\t<chrNameFile> is the chromosome size file\n")
 		sys.stderr.write("\t<peakFileList> is the name of the peak file list for each signal type\n")
-		sys.stderr.write("\t<positiveScores> is the name of the file containing the scores for all positivies\n")
-		sys.stderr.write("\t<negativeScores> is the name of the file containing the scores for all negatives\n")
+		sys.stderr.write("\t<positiveScores> is the file containing the scores for all training positives\n")
+		sys.stderr.write("\t<negativeScores> is the file containing the scores for all training negatives\n")
 		sys.stderr.write("\t<outputPrefix> is the prefix for all chromosome names\n")
 		sys.exit()
 
