@@ -39,6 +39,7 @@ def readMetaProfile(metaProfileFile):
 def readMetaprofiles(ip):
 	metaprofiles = OrderedDict()
 	for line in ip:
+		print line
 		signalType = line.split("\t")[0]
 		filename = line.strip().split("\t")[1]
 		metaprofiles[signalType] = readMetaProfile(filename)
