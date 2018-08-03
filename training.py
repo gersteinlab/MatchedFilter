@@ -23,7 +23,7 @@ def getScores(trainingScoreFile):
 		fields = line.strip().split("\t")
 		featureScores.append([])
 		for idx in range(5, len(fields)):
-			featureScores[-1].append(float(fields[5]))
+			featureScores[-1].append(float(fields[idx]))
 
 	return features, featureScores
 
