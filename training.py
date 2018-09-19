@@ -76,8 +76,11 @@ def calculateZscores(positiveScores, negativeScores, trainingNegatives):
 
 		median = np.median(subset) #Slightly right-skewed. So median might be better starting point for fit
 		sigma = np.std(subset)
-		nopt,ncov = curve_fit(gauss_function, x, y, p0=[max(y), median, sigma])
-
+		try:
+			nopt,ncov = curve_fit(gauss_function, x, y, p0=[max(y), median, sigma])
+		except:
+			nopt = [1,median,sigma]
+			
 		idx2 = 0
 		for currScore in positiveScores:
 			Zpos[idx2].append((currScore[idx] - nopt[1])/nopt[2])
